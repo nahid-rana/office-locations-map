@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Global Office Locations</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Slider -->
+        <nav class="nav-slider">
+            <div class="nav-slider-content">
+                <h1 class="nav-title">Our Global Presence</h1>
+                <p class="nav-subtitle">Connecting across continents</p>
+            </div>
+        </nav>
+
+        <!-- Hero Section with Map -->
+        <section class="hero-section">
+            <div class="map-container">
+                <svg class="world-map" viewBox="0 0 1400 700" preserveAspectRatio="xMidYMid meet">
+                    <!-- SVG Background -->
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Map Background -->
+                    <rect width="1400" height="700" fill="url(#mapGradient)"/>
+
+                    <!-- Curved Connection Lines -->
+                    <g class="connection-lines" id="connectionLines"></g>
+
+                    <!-- Location Pins -->
+                    <g class="location-pins" id="locationPins"></g>
+                </svg>
+
+                <!-- Location Info Panel -->
+                <div class="info-panel" id="infoPanel">
+                    <div class="info-content">
+                        <h3 class="info-title" id="infoTitle">Select a Location</h3>
+                        <p class="info-description" id="infoDescription">Click on any pin to see more details</p>
+                        <div class="info-stats">
+                            <div class="stat">
+                                <span class="stat-label">Total Offices:</span>
+                                <span class="stat-value" id="totalOffices">10</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Countries:</span>
+                                <span class="stat-value" id="totalCountries">7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Locations List -->
+        <section class="locations-list">
+            <h2>All Locations</h2>
+            <div class="locations-grid" id="locationsGrid"></div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
