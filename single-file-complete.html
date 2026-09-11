@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Global Office Locations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00d4ff;
+            --secondary-color: #ff006e;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --accent-color: #fbbf24;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 50%, #0f172a 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Navigation Slider */
+        .nav-slider {
+            width: 100%;
+            height: 80px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-slider-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .nav-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .nav-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            width: 100%;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .map-container {
+            width: 100%;
+            max-width: 1400px;
+            height: auto;
+            aspect-ratio: 2/1;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 20px;
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .world-map {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.1));
+        }
+
+        /* Connection Lines */
+        .connection-lines path {
+            stroke: url(#lineGradient);
+            stroke-width: 2;
+            fill: none;
+            filter: url(#glow);
+            stroke-linecap: round;
+            opacity: 0.6;
+            animation: flowLine 6s ease-in-out infinite;
+        }
+
+        @keyframes flowLine {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Location Pins */
+        .location-pins {
+            filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.3));
+        }
+
+        .pin-circle {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pin-circle circle {
+            fill: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .pin-circle:hover circle {
+            r: 10;
+            fill: var(--secondary-color);
+            opacity: 1;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 110, 0.8));
+        }
+
+        .pin-circle text {
+            font-size: 11px;
+            font-weight: 600;
+            fill: var(--text-primary);
+            pointer-events: none;
+            text-anchor: middle;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pin-circle:hover text {
+            opacity: 1;
+        }
+
+        .pin-circle .country-text {
+            font-size: 8px;
+            fill: var(--text-secondary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pin-circle:hover .country-text {
+            opacity: 1;
+        }
+
+        .pin-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                r: 6;
+                opacity: 0.8;
+            }
+            50% {
+                r: 12;
+                opacity: 0.3;
+            }
+        }
+
+        .pin-coming-soon circle {
+            fill: var(--accent-color);
+            opacity: 0.5;
+        }
+
+        .pin-coming-soon:hover circle {
+            fill: var(--accent-color);
+            opacity: 1;
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 250px;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+                        0 0 20px rgba(0, 212, 255, 0.1);
+            animation: slideIn 0.5s ease-out;
+            z-index: 20;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .info-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .info-stats {
+            display: flex;
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .stat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Locations List Section */
+        .locations-list {
+            width: 100%;
+            padding: 80px 40px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.5), rgba(30, 41, 59, 0.5));
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .locations-list h2 {
+            font-size: 32px;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(90deg, #00d4ff, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .location-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .location-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .location-card:hover::before {
+            left: 100%;
+        }
+
+        .location-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 212, 255, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .location-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .location-pin-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .location-card.coming-soon .location-pin-icon {
+            background: linear-gradient(135deg, var(--accent-color), #ec4899);
+        }
+
+        .location-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .location-card-country {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .location-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .location-badge.coming-soon {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: rgba(251, 191, 36, 0.3);
+            color: var(--accent-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .nav-slider {
+                height: 70px;
+                padding: 0 25px;
+            }
+
+            .nav-title {
+                font-size: 20px;
+            }
+
+            .hero-section {
+                padding: 30px 15px;
+            }
+
+            .map-container {
+                border-radius: 15px;
+                aspect-ratio: 16/10;
+            }
+
+            .info-panel {
+                bottom: 20px;
+                right: 20px;
+                min-width: 200px;
+                padding: 20px;
+            }
+
+            .info-title {
+                font-size: 16px;
+            }
+
+            .locations-list {
+                padding: 60px 25px;
+            }
+
+            .locations-list h2 {
+                font-size: 28px;
+                margin-bottom: 30px;
+            }
+
+            .locations-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-slider {
+                height: 60px;
+                padding: 0 15px;
+            }
+
+            .nav-title {
+                font-size: 18px;
+            }
+
+            .nav-subtitle {
+                font-size: 10px;
+            }
+
+            .hero-section {
+                padding: 20px 10px;
+            }
+
+            .map-container {
+                border-radius: 12px;
+                aspect-ratio: 4/3;
+            }
+
+            .info-panel {
+                position: static;
+                margin-top: 20px;
+                min-width: auto;
+                max-width: none;
+            }
+
+            .info-stats {
+                flex-direction: row;
+            }
+
+            .locations-list {
+                padding: 40px 15px;
+            }
+
+            .locations-list h2 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
+            .locations-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+
+            .location-card {
+                padding: 15px;
+            }
+
+            .location-card-title {
+                font-size: 16px;
+            }
+
+            .pin-circle text {
+                font-size: 9px;
+            }
+
+            .pin-circle .country-text {
+                font-size: 7px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-slider {
+                height: 50px;
+                padding: 0 10px;
+            }
+
+            .nav-title {
+                font-size: 16px;
+            }
+
+            .nav-subtitle {
+                font-size: 9px;
+            }
+
+            .hero-section {
+                padding: 15px 5px;
+                min-height: calc(100vh - 50px);
+            }
+
+            .map-container {
+                border-radius: 10px;
+                aspect-ratio: 1/1;
+                border: 1px solid rgba(0, 212, 255, 0.1);
+            }
+
+            .world-map {
+                filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.05));
+            }
+
+            .info-panel {
+                min-width: auto;
+                padding: 15px;
+                border-radius: 12px;
+            }
+
+            .info-title {
+                font-size: 14px;
+            }
+
+            .info-description {
+                font-size: 12px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .locations-list {
+                padding: 30px 10px;
+            }
+
+            .locations-list h2 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            .locations-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .location-card {
+                padding: 12px;
+            }
+
+            .location-card-title {
+                font-size: 14px;
+            }
+
+            .pin-circle text {
+                font-size: 8px;
+            }
+
+            .pin-circle .country-text {
+                font-size: 6px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Slider -->
+        <nav class="nav-slider">
+            <div class="nav-slider-content">
+                <h1 class="nav-title">Our Global Presence</h1>
+                <p class="nav-subtitle">Connecting across continents</p>
+            </div>
+        </nav>
+
+        <!-- Hero Section with Map -->
+        <section class="hero-section">
+            <div class="map-container">
+                <svg class="world-map" viewBox="0 0 1400 700" preserveAspectRatio="xMidYMid meet">
+                    <!-- SVG Background -->
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Map Background -->
+                    <rect width="1400" height="700" fill="url(#mapGradient)"/>
+
+                    <!-- Curved Connection Lines -->
+                    <g class="connection-lines" id="connectionLines"></g>
+
+                    <!-- Location Pins -->
+                    <g class="location-pins" id="locationPins"></g>
+                </svg>
+
+                <!-- Location Info Panel -->
+                <div class="info-panel" id="infoPanel">
+                    <div class="info-content">
+                        <h3 class="info-title" id="infoTitle">Select a Location</h3>
+                        <p class="info-description" id="infoDescription">Click on any pin to see more details</p>
+                        <div class="info-stats">
+                            <div class="stat">
+                                <span class="stat-label">Total Offices:</span>
+                                <span class="stat-value" id="totalOffices">10</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Countries:</span>
+                                <span class="stat-value" id="totalCountries">7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Locations List -->
+        <section class="locations-list">
+            <h2>All Locations</h2>
+            <div class="locations-grid" id="locationsGrid"></div>
+        </section>
+    </div>
+
+    <script>
+        // Office Locations Data
+        const locations = [
+            // Morocco
+            { name: 'Casablanca', country: 'Morocco', x: 520, y: 320, isPrimary: true, type: 'hub' },
+            { name: 'Rabat', country: 'Morocco', x: 510, y: 290, isPrimary: false, type: 'office' },
+            { name: 'Marrakech', country: 'Morocco', x: 480, y: 360, isPrimary: false, type: 'office' },
+            
+            // Egypt
+            { name: 'Cairo', country: 'Egypt', x: 620, y: 380, isPrimary: true, type: 'hub' },
+            { name: 'Alexandria', country: 'Egypt', x: 590, y: 330, isPrimary: false, type: 'office' },
+            
+            // Netherlands
+            { name: 'Rotterdam', country: 'Netherlands', x: 600, y: 180, isPrimary: false, type: 'office' },
+            
+            // Spain
+            { name: 'Barcelona', country: 'Spain', x: 550, y: 240, isPrimary: false, type: 'office' },
+            
+            // United Kingdom
+            { name: 'London', country: 'United Kingdom', x: 620, y: 150, isPrimary: false, type: 'office' },
+            { name: 'Leicester', country: 'United Kingdom', x: 630, y: 130, isPrimary: false, type: 'office' },
+            
+            // Estonia
+            { name: 'Tallinn', country: 'Estonia', x: 720, y: 120, isPrimary: false, type: 'office' },
+            
+            // USA (Coming Soon)
+            { name: 'USA', country: 'Coming Soon', x: 200, y: 300, isPrimary: false, type: 'comingSoon' },
+        ];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeMap();
+            renderLocationsList();
+            setupLocationInteractions();
+        });
+
+        // Initialize the map with pins and connections
+        function initializeMap() {
+            const svg = document.querySelector('.world-map');
+            const connectionLines = document.getElementById('connectionLines');
+            const locationPins = document.getElementById('locationPins');
+            
+            // Add gradient for connection lines
+            const defs = svg.querySelector('defs');
+            if (!defs.querySelector('#lineGradient')) {
+                const lineGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+                lineGradient.id = 'lineGradient';
+                lineGradient.setAttribute('x1', '0%');
+                lineGradient.setAttribute('y1', '0%');
+                lineGradient.setAttribute('x2', '100%');
+                lineGradient.setAttribute('y2', '100%');
+                
+                const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                stop1.setAttribute('offset', '0%');
+                stop1.setAttribute('style', 'stop-color:#00d4ff;stop-opacity:0.6');
+                
+                const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                stop2.setAttribute('offset', '100%');
+                stop2.setAttribute('style', 'stop-color:#fbbf24;stop-opacity:0.6');
+                
+                lineGradient.appendChild(stop1);
+                lineGradient.appendChild(stop2);
+                defs.appendChild(lineGradient);
+            }
+            
+            // Draw curved connections between nearby locations
+            drawConnections(connectionLines);
+            
+            // Draw location pins
+            drawPins(locationPins);
+            
+            // Update stats
+            updateStats();
+        }
+
+        // Draw curved connection lines between locations
+        function drawConnections(container) {
+            container.innerHTML = ''; // Clear existing
+            
+            // Define which locations should be connected
+            const connectionPairs = [
+                // African Hub connections
+                [0, 1], [0, 2], [0, 3], [3, 4],
+                // European connections
+                [5, 6], [6, 7], [7, 8], [8, 9],
+                // Cross-continent primary connections
+                [0, 5], [3, 5], [7, 9],
+            ];
+            
+            connectionPairs.forEach((pair, index) => {
+                const [start, end] = pair;
+                if (start < locations.length && end < locations.length) {
+                    const startLoc = locations[start];
+                    const endLoc = locations[end];
+                    
+                    // Create curved path
+                    const path = createCurvedPath(startLoc, endLoc);
+                    const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    pathElement.setAttribute('d', path);
+                    pathElement.setAttribute('class', 'connection-path');
+                    pathElement.style.animationDelay = `${index * 0.2}s`;
+                    
+                    container.appendChild(pathElement);
+                }
+            });
+        }
+
+        // Create SVG path with quadratic curve
+        function createCurvedPath(start, end) {
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Control point for curve
+            const controlX = (start.x + end.x) / 2 + (dy / distance) * (distance * 0.15);
+            const controlY = (start.y + end.y) / 2 - (dx / distance) * (distance * 0.15);
+            
+            return `M ${start.x} ${start.y} Q ${controlX} ${controlY} ${end.x} ${end.y}`;
+        }
+
+        // Draw location pins on the map
+        function drawPins(container) {
+            container.innerHTML = ''; // Clear existing
+            
+            locations.forEach((location, index) => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', `pin-circle ${location.type === 'comingSoon' ? 'pin-coming-soon' : ''}`);
+                g.setAttribute('data-index', index);
+                g.style.cursor = 'pointer';
+                
+                // Add pulse animation to primary hubs
+                if (location.isPrimary) {
+                    g.classList.add('pin-pulse');
+                }
+                
+                // Main circle
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', location.x);
+                circle.setAttribute('cy', location.y);
+                circle.setAttribute('r', location.isPrimary ? 8 : 6);
+                circle.setAttribute('class', 'pin-dot');
+                
+                // City name
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', location.x);
+                text.setAttribute('y', location.y - 20);
+                text.setAttribute('class', 'pin-text');
+                text.textContent = location.name;
+                
+                // Country name (smaller)
+                const countryText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                countryText.setAttribute('x', location.x);
+                countryText.setAttribute('y', location.y - 8);
+                countryText.setAttribute('class', 'country-text pin-text');
+                countryText.textContent = `(${location.country})`;
+                
+                g.appendChild(circle);
+                g.appendChild(text);
+                g.appendChild(countryText);
+                
+                // Add click event
+                g.addEventListener('click', () => showLocationInfo(location));
+                g.addEventListener('mouseenter', () => highlightLocation(index));
+                g.addEventListener('mouseleave', () => unhighlightLocation(index));
+                
+                container.appendChild(g);
+            });
+        }
+
+        // Show location info in the panel
+        function showLocationInfo(location) {
+            const infoTitle = document.getElementById('infoTitle');
+            const infoDescription = document.getElementById('infoDescription');
+            
+            infoTitle.textContent = location.name;
+            
+            let description = `<strong>${location.country}</strong>`;
+            if (location.isPrimary) {
+                description += ` • Primary Hub`;
+            }
+            if (location.type === 'comingSoon') {
+                description = `Coming Soon - ${location.country}`;
+            }
+            
+            infoDescription.innerHTML = description;
+        }
+
+        // Highlight location on hover
+        function highlightLocation(index) {
+            const pins = document.querySelectorAll('.pin-circle');
+            pins[index]?.classList.add('active');
+        }
+
+        // Remove highlight
+        function unhighlightLocation(index) {
+            const pins = document.querySelectorAll('.pin-circle');
+            pins[index]?.classList.remove('active');
+        }
+
+        // Render locations list at bottom
+        function renderLocationsList() {
+            const grid = document.getElementById('locationsGrid');
+            grid.innerHTML = '';
+            
+            // Render cards
+            locations.forEach(location => {
+                const card = document.createElement('div');
+                card.className = `location-card ${location.type === 'comingSoon' ? 'coming-soon' : ''}`;
+                
+                const badge = location.isPrimary ? 'Primary Hub' : location.type === 'comingSoon' ? 'Coming Soon' : 'Office';
+                const badgeClass = location.type === 'comingSoon' ? 'coming-soon' : '';
+                
+                card.innerHTML = `
+                    <div class="location-card-header">
+                        <div class="location-pin-icon">
+                            ${location.isPrimary ? '★' : '📍'}
+                        </div>
+                        <div>
+                            <div class="location-card-title">${location.name}</div>
+                            <div class="location-card-country">${location.country}</div>
+                        </div>
+                    </div>
+                    <span class="location-badge ${badgeClass}">${badge}</span>
+                `;
+                
+                card.addEventListener('click', () => showLocationInfo(location));
+                grid.appendChild(card);
+            });
+        }
+
+        // Setup location interactions
+        function setupLocationInteractions() {
+            const cards = document.querySelectorAll('.location-card');
+            cards.forEach((card, index) => {
+                card.addEventListener('mouseenter', () => {
+                    highlightLocation(index);
+                });
+                card.addEventListener('mouseleave', () => {
+                    unhighlightLocation(index);
+                });
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalOffices = locations.length;
+            const countries = new Set(locations.map(l => l.country)).size;
+            
+            document.getElementById('totalOffices').textContent = totalOffices - 1; // Exclude "Coming Soon"
+            document.getElementById('totalCountries').textContent = countries - 1; // Exclude "Coming Soon"
+        }
+
+        // Animate pins on load
+        window.addEventListener('load', () => {
+            const pins = document.querySelectorAll('.pin-circle');
+            pins.forEach((pin, index) => {
+                pin.style.animation = 'none';
+                setTimeout(() => {
+                    pin.style.animation = '';
+                }, 10 + index * 30);
+            });
+            
+            // Animate location cards
+            const cards = document.querySelectorAll('.location-card');
+            cards.forEach((card, index) => {
+                card.style.animation = 'none';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 500 + index * 50);
+            });
+        });
+
+        // Initialize with default location
+        window.addEventListener('load', () => {
+            showLocationInfo(locations[0]);
+        });
+    </script>
+</body>
+</html>
